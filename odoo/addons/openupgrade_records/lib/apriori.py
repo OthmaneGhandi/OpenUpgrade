@@ -33,6 +33,7 @@ merged_modules = {
     'website_rating_project': 'project',
     'website_sale_options': 'website_sale',
     'website_sale_stock_options': 'website_sale_stock',
+    'test_pylint': 'test_lint',
     # OCA/account-financial-reporting
     'customer_activity_statement': 'partner_statement',
     'customer_outstanding_statement': 'partner_statement',
@@ -43,6 +44,7 @@ merged_modules = {
     # OCA/event
     'event_registration_mass_mailing': 'mass_mailing_event',
     # OCA/partner-contact
+    'base_country_state_translatable': 'l10n_multilang',
     'base_partner_merge': 'base',
     # OCA/server-auth
     'auth_brute_force': 'base',
