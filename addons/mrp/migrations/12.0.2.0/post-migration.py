@@ -1,6 +1,7 @@
 # Copyright 2019 Eficent <http://www.eficent.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 from openupgradelib import openupgrade
+from psycopg2.extensions import AsIs
 from odoo.addons.mrp import _create_warehouse_data
 
 
@@ -21,19 +22,18 @@ def fill_mrp_workcenter_productivity_loss_loss_id(cr):
         UPDATE mrp_workcenter_productivity_loss wpl
         SET loss_id = wplt.id
         FROM mrp_workcenter_productivity_loss_type wplt
-        WHERE wpl.loss_id IS NULL AND wpl.loss_type = wplt.loss_type
-        """,
+        WHERE wpl.loss_id IS NULL AND wpl.%s = wplt.loss_type
+        """, (AsIs(openupgrade.get_legacy_name('loss_type')), ),
     )
 
 
 def fill_stock_warehouse_picking_types(env):
-    # It breaks in purchase_stock if we do this in an end-migration instead.
-    # We need to fill the new pbm_type_id field to assure calling in
-    # _create_or_update_global_routes_rules() in other modules doesn't break.
-    warehouses = env['stock.warehouse'].search([])
-    for warehouse in warehouses:
-        warehouse.write(
-            warehouse._create_or_update_sequences_and_picking_types())
+    warehouse_ids = env['stock.warehouse'].search([])
+    for warehouse_id in warehouse_ids:
+        warehouse_id.write(warehouse_id._create_or_update_sequences_and_picking_types())
+#        picking_type_vals = warehouse_id._create_or_update_sequences_and_picking_types()
+#        if picking_type_vals:
+#            warehouse_id.write(picking_type_vals)
 
 
 @openupgrade.migrate()
@@ -45,8 +45,3 @@ def migrate(env, version):
     fill_mrp_workcenter_productivity_loss_loss_id(cr)
     fill_stock_warehouse_picking_types(env)
     _create_warehouse_data(cr, env.registry)
-    openupgrade.delete_records_safely_by_xml_id(
-        env, [
-            'mrp.sequence_mrp_prod',
-        ],
-    )
