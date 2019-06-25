@@ -171,4 +171,8 @@ System</span>]]></field>
   <record id="dm" model="res.country">
     <field eval="1767" name="phone_code"/>
   </record>
+<record model="res.groups" id="group_user">
+    <field name="category_id" ref="base.module_category_user_type"/>
+    <field name="name">Internal User</field>
+</record>
 </odoo>
